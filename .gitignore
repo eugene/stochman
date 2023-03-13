@@ -130,3 +130,9 @@ dmypy.json
 
 # vscode dev
 .vscode
+
+# MacOS
+.DS_Store
+
+# Example artifacts
+examples/MNIST/

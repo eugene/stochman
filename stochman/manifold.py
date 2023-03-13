@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 from typing import Optional, Tuple, Union
 
 import numpy as np
-import torch
+import torch, time
 from torch.autograd import grad
 
 from stochman.curves import BasicCurve, CubicSpline
@@ -124,8 +124,10 @@ class Manifold(ABC):
         if diagonal_metric:
             dot = (u * M * v).sum(dim=1)  # N
         else:
+            t0 = time.time()
             Mv = M.bmm(v.unsqueeze(-1))  # Nx(d)
             dot = u.unsqueeze(1).bmm(Mv).flatten()  # N    #(u * Mv).sum(dim=1) # N
+            print("inner time: ", time.time() - t0)
         if return_metric:
             return dot, M
         else:
@@ -287,7 +289,7 @@ class Manifold(ABC):
                 ddc = ddc.squeeze(-1)  # Nx(d)
         return ddc
 
-    def connecting_geodesic(self, p0, p1, init_curve: Optional[BasicCurve] = None) -> Tuple[BasicCurve, bool]:
+    def connecting_geodesic(self, p0, p1, num_nodes = 5, init_curve: Optional[BasicCurve] = None) -> Tuple[BasicCurve, bool]:
         """
         Compute geodesic connecting two points.
 
@@ -300,7 +302,7 @@ class Manifold(ABC):
                 of the chosen curve family is applied.
         """
         if init_curve is None:
-            curve = CubicSpline(p0, p1)
+            curve = CubicSpline(p0, p1, num_nodes=num_nodes)
         else:
             curve = init_curve
             curve.begin = p0
