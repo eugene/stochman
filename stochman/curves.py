@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 from abc import ABC, abstractmethod
 from typing import Optional, Tuple
-from numpy import zeros_like
+
 
 import torch
 from matplotlib.axis import Axis
